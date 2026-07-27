@@ -3,8 +3,6 @@ project(farfield VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 26)
 
-#add_compile_options(-Wall)
-
 set(CMAKE_CXX_ABI_COMPILED ON)
 
 file(
@@ -12,7 +10,8 @@ file(
 )
 
 #Local libs
-list(APPEND SOURCES
+list(
+    APPEND SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/glad/src/glad.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/stbi/stb_image.cpp
 )

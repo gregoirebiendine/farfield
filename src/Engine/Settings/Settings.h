@@ -7,12 +7,12 @@ class Settings
 {
     // FPS
     double targetFrameRate{60.0};
-    double targetFrameTime{0.016666667};
+    double targetFrameTime{1/targetFrameRate};
     bool vsync{true};
 
     // Camera settings
     uint8_t viewDistance{8};
-    uint8_t fov{90};
+    uint8_t fov{100};
 
     // Window settings
     bool fullscreen{false};

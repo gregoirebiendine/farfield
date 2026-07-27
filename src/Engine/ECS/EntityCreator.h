@@ -27,8 +27,8 @@ namespace ECS::Creator
 {
     inline IEntity createPlayer(Handler& handler, const World& world)
     {
-        const auto mesh = world.getRegistries().get<MeshRegistry>().get("player");
-        const auto texture = world.getRegistries().get<TextureRegistry>().getByName("player");
+        // const auto mesh = world.getRegistries().get<MeshRegistry>().get("player");
+        // const auto texture = world.getRegistries().get<TextureRegistry>().getByName("player");
         const auto player = handler.createEntity();
 
         handler.addComponent(player, Position{11.5f, 73.f, 11.5f});
@@ -42,7 +42,7 @@ namespace ECS::Creator
         handler.addComponent(player, Hotbar{});
         handler.addComponent(player, InternalInventory{});
         handler.addComponent(player, Equipments{});
-        handler.addComponent(player, MeshRef{ mesh, texture });
+        // handler.addComponent(player, MeshRef{ mesh, texture });
 
         handler.getComponent<Hotbar>(player).items[0] = world.getRegistries().get<ItemRegistry>().createStack("core:iron_sword", 1);
         handler.getComponent<Hotbar>(player).items[1] = world.getRegistries().get<ItemRegistry>().createStack("core:iron_ingot", 9);
