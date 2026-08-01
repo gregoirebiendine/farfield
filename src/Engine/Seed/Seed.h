@@ -1,6 +1,7 @@
 #ifndef FARFIELD_SEED_H
 #define FARFIELD_SEED_H
 
+#include <chrono>
 #include <cstdint>
 #include <cstddef>
 #include <string_view>
@@ -16,14 +17,14 @@ struct RNG
         return n ^ (n >> 31);
     }
 
+    static uint64_t randomU64()
+    {
+        return mix64(std::chrono::steady_clock::now().time_since_epoch().count());
+    }
+
     uint64_t next() {
         s += 0x9E3779B97F4A7C15ull;
         return mix64(s);
-    }
-
-    double nextDouble()
-    {
-        return static_cast<double>(next() >> 11) * 0x1.0p-53;
     }
 
     uint32_t nextInt(const uint32_t bound) {
@@ -46,10 +47,15 @@ struct RNG
         return static_cast<uint32_t>(m >> 32);
     }
 
-    [[nodiscard]] int32_t range(const int32_t min, const int32_t max) {
+    int32_t range(const int32_t min, const int32_t max) {
         if (max <= min)
             return min;
         return min + static_cast<int32_t>(nextInt(static_cast<uint32_t>(max - min) + 1u));
+    }
+
+    double nextDouble()
+    {
+        return static_cast<double>(next() >> 11) * 0x1.0p-53;
     }
 
     void shuffle(uint8_t* data, const size_t n) {
@@ -86,31 +92,50 @@ struct Seed
             return Seed{ RNG::mix64(this->v ^ RNG::mix64(sel + 0x9E3779B97F4A7C15ull)), Raw{} };
         }
 
-    static constexpr uint64_t fnv1a64(const std::string_view str) {
-        uint64_t h = 0xCBF29CE484222325ull;
-        for (const char c : str) {
-            h = h ^ static_cast<uint8_t>(c);
-            h *= 0x100000001B3ull;
+        static constexpr uint64_t fnv1a64(const std::string_view str) {
+            uint64_t h = 0xCBF29CE484222325ull;
+            for (const char c : str) {
+                h = h ^ static_cast<uint8_t>(c);
+                h *= 0x100000001B3ull;
+            }
+            return h;
         }
-        return h;
-    }
 };
 
-//  domains :
-// feature.tree.oak.count
-// feature.tree.oak.position
-// feature.tree.oak.height
-//
-// feature.tree.birch.count
-// feature.tree.birch.position
-//
-// feature.ore.iron.count
-// feature.ore.iron.position
-//
-// feature.lake.water.exists
-// feature.lake.water.size
-//
-// feature.structure.village.exists
-// feature.structure.village.rotation
+namespace SeedFeatures
+{
+    namespace Tree
+    {
+        constexpr auto oak = Seed::fnv1a64("feature.tree.oak");
+        constexpr auto dark_oak = Seed::fnv1a64("feature.tree.dark_oak");
+        constexpr auto spruce = Seed::fnv1a64("feature.tree.spruce");
+        constexpr auto birch = Seed::fnv1a64("feature.tree.birch");
+        constexpr auto jungle = Seed::fnv1a64("feature.tree.jungle");
+        constexpr auto acacia = Seed::fnv1a64("feature.tree.acacia");
+        constexpr auto azalea = Seed::fnv1a64("feature.tree.azalea");
+        constexpr auto cherry = Seed::fnv1a64("feature.tree.cherry");
+    }
+
+    namespace Ore
+    {
+        constexpr auto coal = Seed::fnv1a64("feature.ore.coal");
+        constexpr auto iron = Seed::fnv1a64("feature.ore.iron");
+        constexpr auto gold = Seed::fnv1a64("feature.ore.gold");
+        constexpr auto redstone = Seed::fnv1a64("feature.ore.redstone");
+        constexpr auto lapis = Seed::fnv1a64("feature.ore.lapis");
+        constexpr auto diamond = Seed::fnv1a64("feature.ore.diamond");
+        constexpr auto netherite = Seed::fnv1a64("feature.ore.netherite");
+    }
+}
+
+// choice from seed :
+// int in [0, N)
+// int type = h % 5;
+
+// bool % p
+// bool yes = (h >> 40) < (uint64_t)(0.05 * (1ull << 24));   // 5 %
+
+// float in [0, 1)
+// double f = (h >> 11) * 0x1.0p-53;
 
 #endif
