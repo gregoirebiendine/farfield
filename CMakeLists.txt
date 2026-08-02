@@ -37,6 +37,7 @@ set(
     ${CMAKE_SOURCE_DIR}/src/Engine/FrameTimer
     ${CMAKE_SOURCE_DIR}/src/Engine/TextureExtruder
     ${CMAKE_SOURCE_DIR}/src/Engine/ThreadPool
+    ${CMAKE_SOURCE_DIR}/src/Engine/Seed
     ${CMAKE_SOURCE_DIR}/src/Engine/Utils
 
     ${CMAKE_SOURCE_DIR}/src/Content/
