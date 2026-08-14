@@ -5,6 +5,7 @@
 #include <functional>
 #include <ostream>
 #include <glm/glm.hpp>
+#include "Seed.h"
 
 struct BlockPos
 {
@@ -93,11 +94,11 @@ inline std::string operator+(const std::string &lhs, const ChunkPos & cp)
 }
 
 struct ChunkPosHash {
-    std::size_t operator()(const ChunkPos& p) const noexcept {
-        const std::size_t h1 = std::hash<int>{}(p.x);
-        const std::size_t h2 = std::hash<int>{}(p.y);
-        const std::size_t h3 = std::hash<int>{}(p.z);
-        return h1 ^ (h2 << 1) ^ (h3 << 2);
+    size_t operator()(const ChunkPos& p) const noexcept {
+        uint64_t h = RNG::mix64(static_cast<uint64_t>(static_cast<uint32_t>(p.x)) * 0xA0761D6478BD642Full);
+        h = RNG::mix64(h ^ (static_cast<uint64_t>(static_cast<uint32_t>(p.y)) * 0xE7037ED1A0B428DBull));
+        h = RNG::mix64(h ^ (static_cast<uint64_t>(static_cast<uint32_t>(p.z)) * 0x8EBC6AF09C88C6E3ull));
+        return h;
     }
 };
 

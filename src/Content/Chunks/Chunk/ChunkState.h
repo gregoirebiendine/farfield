@@ -10,25 +10,20 @@ enum class ChunkState
     TERRAIN_GENERATING,
     TERRAIN_DONE,
 
-    // Pass 2: Decoration
-    DECOR_PENDING,
-    DECOR_GENERATING,
-    DECOR_DONE,
+    // Pass 2: Meshing
+    MESH_PENDING,
+    MESH_GENERATING,
+    MESH_DONE,
 
-    // Meshing
-    MESHING,
-    MESHED,
-    READY
+    READY,
 };
 
-// Helper to check if terrain is complete
 inline bool hasTerrainComplete(const ChunkState state) {
     return state >= ChunkState::TERRAIN_DONE;
 }
 
-// Helper to check if fully generated
 inline bool isFullyGenerated(const ChunkState state) {
-    return state >= ChunkState::DECOR_DONE;
+    return state >= ChunkState::MESH_DONE;
 }
 
 #endif
