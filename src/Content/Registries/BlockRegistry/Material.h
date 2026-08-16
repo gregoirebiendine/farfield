@@ -7,8 +7,8 @@ constexpr int ROTATION_SHIFT = 13;
 constexpr int BLOCK_ID_MASK = 0x1FFF;
 constexpr int ROTATION_MASK = 0x7;
 
-using BlockId = std::uint16_t;       // 16bits
-using BlockRotation = std::uint8_t;  // 8bits
+using BlockId = uint16_t;       // 16bits
+using BlockRotation = uint8_t;  // 8bits
 
 enum MaterialFace : unsigned char
 {
@@ -21,15 +21,22 @@ enum MaterialFace : unsigned char
 };
 
 struct Material {
-    std::uint16_t data = 0;
+    uint16_t data = 0;
 
     static Material pack(const BlockId blockId, const BlockRotation rotation)
     {
-        return {static_cast<std::uint16_t>((rotation << ROTATION_SHIFT) | (blockId & BLOCK_ID_MASK)) };
+        return {static_cast<uint16_t>((rotation << ROTATION_SHIFT) | (blockId & BLOCK_ID_MASK)) };
     }
 
-    [[nodiscard]] BlockId getBlockId() const { return data & BLOCK_ID_MASK; }
-    [[nodiscard]] BlockRotation getRotation() const { return (data >> ROTATION_SHIFT) & ROTATION_MASK; }
+    [[nodiscard]] BlockId getBlockId() const
+    {
+        return data & BLOCK_ID_MASK;
+    }
+
+    [[nodiscard]] BlockRotation getRotation() const
+    {
+        return (data >> ROTATION_SHIFT) & ROTATION_MASK;
+    }
 
     bool operator==(const Material&) const = default;
 };

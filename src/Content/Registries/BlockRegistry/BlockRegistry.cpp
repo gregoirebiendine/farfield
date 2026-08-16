@@ -4,7 +4,15 @@
 
 BlockRegistry::BlockRegistry()
 {
-    this->registerBlock({"core","air",true,0.f,RotationType::NONE,{}});
+    this->registerBlock({
+        .registerNamespace = "core",
+        .blockName = "air",
+        .transparent = true,
+        .hardness = 0.f,
+        .rotation = RotationType::NONE,
+        .blockFaces = {}
+    });
+
     this->registerBlocksFromFile("core");
 }
 
@@ -89,7 +97,6 @@ bool BlockRegistry::isEqual(const BlockId id, const std::string& name) const
 {
     if (id >= this->blocks.size())
         throw std::out_of_range("[BlockRegistry::isEqual] Out of range BlockID : " + std::to_string(id));
-
     return this->blocks[id].getFullName() == name;
 }
 

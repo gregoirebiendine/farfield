@@ -5,6 +5,8 @@
 #include <functional>
 #include <ostream>
 #include <glm/glm.hpp>
+
+#include "Constants.h"
 #include "Seed.h"
 
 struct BlockPos
@@ -27,42 +29,41 @@ struct BlockPos
 };
 
 struct ChunkPos {
-    static constexpr unsigned char ChunkSize = 16;
-    int x, y, z;
+    int x, y, z = 0;
 
     static ChunkPos fromWorld(const int wx, const int wy, const int wz)
     {
-        return {wx >> 4, wy >> 4, wz >> 4};
+        return {.x = wx >> 4, .y = wy >> 4, .z = wz >> 4};
     }
 
     static ChunkPos fromWorld(const glm::vec3& pos)
     {
         return {
-            static_cast<int>(pos.x) >> 4,
-            static_cast<int>(pos.y) >> 4,
-            static_cast<int>(pos.z) >> 4
+            .x = static_cast<int>(pos.x) >> 4,
+            .y = static_cast<int>(pos.y) >> 4,
+            .z = static_cast<int>(pos.z) >> 4
         };
     }
 
-    // Convert a 1D index to 3D coordinates (x, y, z)
+    // Convert index to (x, y, z) coordinates (inside a chunk)
     static BlockPos indexToLocalCoords(const int index)
     {
         return {
-            index % ChunkSize,
-            (index / ChunkSize) % ChunkSize,
-            index / (ChunkSize * ChunkSize)
+            index % Constants::Chunk::SIZE,
+            (index / Constants::Chunk::SIZE) % Constants::Chunk::SIZE,
+            index / (Constants::Chunk::SIZE * Constants::Chunk::SIZE)
         };
     }
 
-    // Convert a local 3D coordinates to a 1D index
-    static int localCoordsToIndex(const uint8_t lx, const uint8_t ly, const uint8_t lz)
+    // Convert (x, y, z) chunk coordinates to index
+    static int localCoordsToIndex(const int x, const int y, const int z)
     {
-        return lx + ChunkSize * (ly + ChunkSize * lz);
+        return (y << 8) | (z << 4) | x;
     }
 
     ChunkPos operator*(const int mul) const
     {
-        return {this->x * mul, this->y * mul, this->z * mul};
+        return {.x = this->x * mul, .y = this->y * mul, .z = this->z * mul};
     }
 
     bool operator<(const ChunkPos& other) const

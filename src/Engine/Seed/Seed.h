@@ -102,8 +102,39 @@ struct Seed
         }
 };
 
+class Domain
+{
+    uint64_t seed;
+
+    public:
+        explicit Domain(const uint64_t s) : seed(s) {}
+
+        // derive a sub-domain from a salt
+        [[nodiscard]] Domain child(const uint64_t salt) const
+        {
+            return Domain(RNG::mix64(seed ^ RNG::mix64(salt)));
+        }
+
+        // positional hashes, 2D and 3D
+        [[nodiscard]] uint64_t hashAt(int x, int z) const;
+        [[nodiscard]] uint64_t hashAt(int x, int y, int z) const;
+
+        // RNG seeded at a position
+        [[nodiscard]] RNG rngAt(const int x, const int z) const
+        {
+            return RNG(hashAt(x, z));
+        }
+};
+
 namespace SeedFeatures
 {
+    namespace Terrain
+    {
+        constexpr auto height = Seed::fnv1a64("feature.terrain.height");
+        constexpr auto tree_cell = Seed::fnv1a64("feature.terrain.tree.cell");
+        constexpr auto tree_shape = Seed::fnv1a64("feature.terrain.tree.shape");
+    }
+
     namespace Tree
     {
         constexpr auto oak = Seed::fnv1a64("feature.tree.oak");
@@ -127,6 +158,21 @@ namespace SeedFeatures
         constexpr auto netherite = Seed::fnv1a64("feature.ore.netherite");
     }
 }
+
+struct WorldSeeds
+{
+    Domain root;
+    Domain height;
+    Domain treeCells;
+    Domain treeShape;
+
+    explicit WorldSeeds(const uint64_t seed) :
+        root(RNG::mix64(seed)),
+        height(root.child(SeedFeatures::Terrain::height)),
+        treeCells(root.child(SeedFeatures::Terrain::tree_cell)),
+        treeShape(root.child(SeedFeatures::Terrain::tree_shape)) {}
+};
+
 
 // choice from seed :
 // int in [0, N)
